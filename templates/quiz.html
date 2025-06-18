@@ -1,0 +1,171 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-4">
+  <h1 class="my-4 text-center">{{ topic }} Quiz</h1>
+
+  {% if questions %}
+  <form
+    method="post"
+    action="{{ url_for('quiz', topic=topic) }}"
+    class="border rounded-lg p-4 shadow-sm"
+  >
+    <div id="quiz-questions" class="mb-4">
+      {% for question in questions %}
+      <div
+        class="quiz-question mb-4"
+        id="question{{ loop.index }}"
+        {% if loop.index != 1 %}style="display: none;"{% endif %}
+      >
+        <h2 style="color: blue; text-align: center">
+          Q{{ loop.index }}/{{ questions|length }}
+        </h2>
+        <h5 class="mb-3">{{ question['question'] }}</h5>
+        <div class="form-check mb-2">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="question{{ loop.index }}"
+            id="question{{ loop.index }}_a"
+            value="A"
+          />
+          <label class="form-check-label" for="question{{ loop.index }}_a">
+            A) {{ question['A'] }}
+          </label>
+        </div>
+        <div class="form-check mb-2">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="question{{ loop.index }}"
+            id="question{{ loop.index }}_b"
+            value="B"
+          />
+          <label class="form-check-label" for="question{{ loop.index }}_b">
+            B) {{ question['B'] }}
+          </label>
+        </div>
+        <div class="form-check mb-2">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="question{{ loop.index }}"
+            id="question{{ loop.index }}_c"
+            value="C"
+          />
+          <label class="form-check-label" for="question{{ loop.index }}_c">
+            C) {{ question['C'] }}
+          </label>
+        </div>
+        <div class="form-check mb-2">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="question{{ loop.index }}"
+            id="question{{ loop.index }}_d"
+            value="D"
+          />
+          <label class="form-check-label" for="question{{ loop.index }}_d">
+            D) {{ question['D'] }}
+          </label>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mb-4">
+      {% if questions|length > 1 %}
+      <button
+        type="button"
+        class="btn btn-warning mr-2 btn-lg"
+        id="skipBtn"
+        onclick="skipQuestion()"
+      >
+        Skip 🔄
+      </button>
+      {% endif %}
+      <button
+        type="button"
+        class="btn btn-primary btn-lg"
+        id="prevBtn"
+        onclick="showPrevQuestion()"
+        {% if questions|length <= 1 %}style="display: none;"{% endif %}
+      >
+        Previous ⬅️
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary btn-lg"
+        id="nextBtn"
+        onclick="showNextQuestion()"
+        {% if questions|length <= 1 %}style="display: none;"{% endif %}
+      >
+        Next ➡️
+      </button>
+    </div>
+    <div style="display: flex; justify-content: center">
+      <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
+        Submit 🚀
+      </button>
+    </div>
+  </form>
+  {% else %}
+  <p>No quiz available. Please create one.</p>
+  <form method="post" action="{{ url_for('create_quiz', topic=topic) }}">
+    <button type="submit" class="btn btn-primary">Create Quiz</button>
+  </form>
+  {% endif %}
+</div>
+
+<script>
+  let currentQuestion = 1;
+  const totalQuestions = {{ questions|length }};
+
+  function skipQuestion() {
+      if (currentQuestion < totalQuestions) {
+          document.getElementById(`question${currentQuestion}`).style.display = 'none';
+          currentQuestion += 1;
+          document.getElementById(`question${currentQuestion}`).style.display = 'block';
+          updateButtons();
+      }
+  }
+
+  function showPrevQuestion() {
+      if (currentQuestion > 1) {
+          document.getElementById(`question${currentQuestion}`).style.display = 'none';
+          currentQuestion -= 1;
+          document.getElementById(`question${currentQuestion}`).style.display = 'block';
+          updateButtons();
+      }
+  }
+
+  function showNextQuestion() {
+      if (currentQuestion < totalQuestions) {
+          document.getElementById(`question${currentQuestion}`).style.display = 'none';
+          currentQuestion += 1;
+          document.getElementById(`question${currentQuestion}`).style.display = 'block';
+          updateButtons();
+      }
+  }
+
+  function updateButtons() {
+      document.getElementById('prevBtn').style.display = currentQuestion === 1 ? 'none' : 'inline-block';
+      document.getElementById('nextBtn').style.display = currentQuestion === totalQuestions ? 'none' : 'inline-block';
+      document.getElementById('skipBtn').style.display = currentQuestion === totalQuestions ? 'none' : 'inline-block';
+  }
+
+  // Initialize buttons on page load
+  document.addEventListener('DOMContentLoaded', function() {
+      updateButtons();
+  });
+</script>
+
+<style>
+  .checkmark {
+    margin-right: 8px;
+    font-size: 1.2rem;
+  }
+  .visually-hidden {
+    position: absolute;
+    left: -9999px;
+  }
+</style>
+{% endblock %}

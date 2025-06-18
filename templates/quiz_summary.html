@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h1 class="my-4 text-center">{{ topic }} Quiz Summary</h1>
+
+  <div class="card mb-4">
+    <div class="card-body text-center"
+      style="border: 2px solid {% if percentage >= 50 %}#5cb85c{% else %}#d9534f{% endif %}; 
+             border-radius: 8px;
+             padding: 2rem;">
+      <h2 class="mb-4">Results</h2>
+      <div style="font-size: 3rem; margin-bottom: 1.5rem;">
+        <span style="padding: 1rem; border-radius: 8px; 
+              background-color: {% if percentage >= 50 %}#5cb85c{% else %}#d9534f{% endif %};
+              color: white;">
+          {{ correct_count }}/{{ total_questions }}
+          {% if percentage >= 50 %}🎉{% else %}😕{% endif %}
+        </span>
+      </div>
+      <div class="row justify-content-center mb-3">
+        <div class="col-md-6">
+          <div class="progress" style="height: 30px;">
+            <div class="progress-bar {% if percentage >= 50 %}bg-success{% else %}bg-danger{% endif %}" 
+                 role="progressbar" 
+                 style="width: {{ percentage }}%;" 
+                 aria-valuenow="{{ percentage }}" 
+                 aria-valuemin="0" 
+                 aria-valuemax="100">
+              {{ percentage }}%
+            </div>
+          </div>
+        </div>
+      </div>
+      <h5 class="mb-3">Attempted: <strong>{{ attempted_count }}/{{ total_questions }}</strong></h5>
+      <a href="{{ url_for('quizzes') }}" class="btn btn-primary mt-3">Back to Quizzes</a>
+    </div>
+  </div>
+
+  <h2 class="mt-4 mb-4 text-center">Questions and Answers</h2>
+  {% for question in questions %}
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="mb-3">{{ loop.index }}. {{ question.question }}</h5>
+        {% set answer_key = 'question' ~ loop.index %}
+        {% set user_answer = answers.get(answer_key) %}
+        {% set is_correct = user_answer and user_answer == question.correct_answer %}
+
+        <div class="form-check mb-2 p-2 rounded {% if user_answer == 'A' %}
+            {% if is_correct %}bg-success text-white
+            {% else %}bg-danger text-white{% endif %}
+          {% elif question.correct_answer == 'A' %}bg-success bg-opacity-10
+          {% endif %}">
+          <label class="form-check-label d-block">
+            <strong>A)</strong> {{ question.A }}
+            {% if user_answer == 'A' and not is_correct %}
+              <span class="ms-2">❌</span>
+            {% elif question.correct_answer == 'A' %}
+              <span class="ms-2">✅</span>
+            {% endif %}
+          </label>
+        </div>
+        
+        <div class="form-check mb-2 p-2 rounded {% if user_answer == 'B' %}
+            {% if is_correct %}bg-success text-white
+            {% else %}bg-danger text-white{% endif %}
+          {% elif question.correct_answer == 'B' %}bg-success bg-opacity-10
+          {% endif %}">
+          <label class="form-check-label d-block">
+            <strong>B)</strong> {{ question.B }}
+            {% if user_answer == 'B' and not is_correct %}
+              <span class="ms-2">❌</span>
+            {% elif question.correct_answer == 'B' %}
+              <span class="ms-2">✅</span>
+            {% endif %}
+          </label>
+        </div>
+        
+        <div class="form-check mb-2 p-2 rounded {% if user_answer == 'C' %}
+            {% if is_correct %}bg-success text-white
+            {% else %}bg-danger text-white{% endif %}
+          {% elif question.correct_answer == 'C' %}bg-success bg-opacity-10
+          {% endif %}">
+          <label class="form-check-label d-block">
+            <strong>C)</strong> {{ question.C }}
+            {% if user_answer == 'C' and not is_correct %}
+              <span class="ms-2">❌</span>
+            {% elif question.correct_answer == 'C' %}
+              <span class="ms-2">✅</span>
+            {% endif %}
+          </label>
+        </div>
+        
+        <div class="form-check mb-2 p-2 rounded {% if user_answer == 'D' %}
+            {% if is_correct %}bg-success text-white
+            {% else %}bg-danger text-white{% endif %}
+          {% elif question.correct_answer == 'D' %}bg-success bg-opacity-10
+          {% endif %}">
+          <label class="form-check-label d-block">
+            <strong>D)</strong> {{ question.D }}
+            {% if user_answer == 'D' and not is_correct %}
+              <span class="ms-2">❌</span>
+            {% elif question.correct_answer == 'D' %}
+              <span class="ms-2">✅</span>
+            {% endif %}
+          </label>
+        </div>
+        
+        <div class="mt-3 p-2 bg-light rounded">
+          <p class="mb-1">
+            <strong>Your answer:</strong> 
+            <span class="{% if is_correct %}text-success{% else %}text-danger{% endif %}">
+              {{ user_answer if user_answer else "Not answered" }}
+            </span>
+          </p>
+          <p class="mb-0">
+            <strong>Correct answer:</strong> 
+            <span class="text-success">{{ question.correct_answer }}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
